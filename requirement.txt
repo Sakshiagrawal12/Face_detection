@@ -1,0 +1,24 @@
+# Core dependencies
+tensorflow==2.13.0
+numpy==1.24.3
+opencv-python==4.8.1.78
+scikit-learn==1.3.0
+scikit-image==0.21.0
+matplotlib==3.7.2
+pillow==10.0.0
+
+# Utilities
+tqdm==4.65.0
+joblib==1.3.1
+pandas==2.0.3
+seaborn==0.12.2
+
+# For better face detection (optional)
+imutils==0.5.4
+
+# For webcam
+pygame==2.5.0  # Optional for sound alerts
+
+# For progress bars and visualization
+ipython==8.14.0
+jupyter==1.0.0
