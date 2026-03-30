@@ -25,7 +25,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/Bharadwaj-8/Face_detection.git', branch: 'feature'
+                git url: 'https://github.com/Bharadwaj-8/Face_detection.git', branch: 'feature-automation2'
             }
         }
 
