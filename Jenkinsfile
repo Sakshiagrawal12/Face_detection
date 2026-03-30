@@ -8,7 +8,7 @@ pipeline {
         IMAGE_NAME = 'mask-detector'
         ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
         DEPLOY_SERVER_IP = '12345'
-        DOCKER_PATH = 'C:\ProgramData\Microsoft\Windows\Start Menu'   // ✅ Added
+        DOCKER_PATH = 'C:/Program Files/Docker/Docker/resources/bin'   // ✅ Added
     }
     
     stages {
