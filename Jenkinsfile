@@ -3,47 +3,71 @@ pipeline {
     agent any
     
     environment {
-        AWS_ACCOUNT_ID = '6931-4991-4819'
+        AWS_ACCOUNT_ID = '693149914819'   // ❗ FIXED (no hyphens)
         AWS_REGION = 'ap-south-1'
-        ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/mask-detector"
-        DEPLOY_SERVER_IP = '13.201.94.72'
+        IMAGE_NAME = 'mask-detector'
+        ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
+        DEPLOY_SERVER_IP = '12345'
+        DOCKER_PATH = 'C:\ProgramData\Microsoft\Windows\Start Menu'   // ✅ Added
     }
     
     stages {
+
+        stage('Debug Environment') {
+            steps {
+                sh """
+                    echo "PATH = $PATH"
+                    which docker || true
+                    ${DOCKER_PATH} --version || true
+                """
+            }
+        }
+
         stage('Checkout') {
             steps {
-                git 'https://github.com/Sakshiagrawal12/Face_detection.git'
+                git url: 'https://github.com/Bharadwaj-8/Face_detection.git', branch: 'feature'
             }
         }
-        
-        stage('Build') {
+
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t mask-detector:latest .'
-                sh "docker tag mask-detector:latest ${ECR_REPO}:latest"
-            }
-        }
-        
-        stage('Push to ECR') {
-            steps {
-                withAWS(credentials: 'aws-credentials', region: "${AWS_REGION}") {
+                script {
                     sh """
-                        aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                        docker push ${ECR_REPO}:latest
+                        ${DOCKER_PATH} build -t ${IMAGE_NAME}:latest .
+                        ${DOCKER_PATH} tag ${IMAGE_NAME}:latest ${ECR_REPO}:latest
                     """
                 }
             }
         }
-        
-        stage('Deploy') {
+
+        stage('Login to ECR') {
+            steps {
+                script {
+                    withAWS(credentials: 'aws-credentials', region: "${AWS_REGION}") {
+                        sh """
+                            aws ecr get-login-password --region ${AWS_REGION} | ${DOCKER_PATH} login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Push to ECR') {
+            steps {
+                sh "${DOCKER_PATH} push ${ECR_REPO}:latest"
+            }
+        }
+
+        stage('Deploy to EC2') {
             steps {
                 sh """
-                    ssh ec2-user@${DEPLOY_SERVER_IP} '
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                        docker pull ${ECR_REPO}:latest
-                        docker stop mask-detector || true
-                        docker rm mask-detector || true
-                        docker run -d --name mask-detector -p 8080:8000 ${ECR_REPO}:latest
-                    '
+                    ssh ec2-user@${DEPLOY_SERVER_IP} "
+                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com &&
+                        docker pull ${ECR_REPO}:latest &&
+                        docker stop mask-detector || true &&
+                        docker rm mask-detector || true &&
+                        docker run -d --name mask-detector -p 8081:8081 ${ECR_REPO}:latest
+                    "
                 """
             }
         }
