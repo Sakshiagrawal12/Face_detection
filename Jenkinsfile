@@ -65,7 +65,7 @@ pipeline {
    stage('Deploy to EC2') {
     steps {
         bat '''
-        "C:\\Windows\\System32\\OpenSSH\\ssh.exe" ec2-user@13.233.174.157 "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 693149914819.dkr.ecr.ap-south-1.amazonaws.com && docker pull 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest && docker stop mask-detector || true && docker rm mask-detector || true && docker run -d --name mask-detector -p 8081:8081 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest"
+        "C:\\Windows\\System32\\OpenSSH\\ssh.exe" ubuntu@13.233.174.157 "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 693149914819.dkr.ecr.ap-south-1.amazonaws.com && docker pull 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest && docker stop mask-detector || true && docker rm mask-detector || true && docker run -d --name mask-detector -p 8081:8081 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest"
         '''
     }
 }
