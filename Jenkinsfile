@@ -7,7 +7,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         IMAGE_NAME = 'mask-detector'
         ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
-        DEPLOY_SERVER_IP = '12345'
+        DEPLOY_SERVER_IP = '13.233.124.42'
         DOCKER_PATH = 'C:/Program Files/Docker/Docker/resources/bin'   // ✅ Added
     }
     
@@ -65,7 +65,7 @@ pipeline {
    stage('Deploy to EC2') {
     steps {
         bat '''
-        "C:\\Windows\\System32\\OpenSSH\\ssh.exe" ec2-user@13.234.186.251 "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 693149914819.dkr.ecr.ap-south-1.amazonaws.com && docker pull 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest && docker stop mask-detector || true && docker rm mask-detector || true && docker run -d --name mask-detector -p 8081:8081 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest"
+        "C:\\Windows\\System32\\OpenSSH\\ssh.exe" ec2-user@13.233.124.42 "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 693149914819.dkr.ecr.ap-south-1.amazonaws.com && docker pull 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest && docker stop mask-detector || true && docker rm mask-detector || true && docker run -d --name mask-detector -p 8081:8081 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest"
         '''
     }
 }
