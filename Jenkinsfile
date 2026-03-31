@@ -38,14 +38,12 @@ pipeline {
     }
 
     stage('Login to ECR') {
-        steps {
-            withAWS(credentials: 'aws-credentials', region: "%AWS_REGION%") {
-                bat '''
-                    aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com
-                '''
-            }
-        }
+    steps {
+        bat """
+            "C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com
+        """
     }
+}
 
     stage('Push to ECR') {
         steps {
