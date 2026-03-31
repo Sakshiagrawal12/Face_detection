@@ -62,17 +62,13 @@ pipeline {
         }
     }
 
-    stage('Deploy to EC2') {
-        steps {
-            bat '''
-                ssh ec2-user@%DEPLOY_SERVER_IP% ^
-                "aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com && ^
-                docker pull %ECR_REPO%:latest && ^
-                docker stop mask-detector || echo not running && ^
-                docker rm mask-detector || echo not exists && ^
-                docker run -d --name mask-detector -p 8081:8081 %ECR_REPO%:latest"
-            '''
-        }
+   stage('Deploy to EC2') {
+    steps {
+        bat '''
+        "C:\\Windows\\System32\\OpenSSH\\ssh.exe" ec2-user@<EC2-IP> ^
+        "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 693149914819.dkr.ecr.ap-south-1.amazonaws.com && docker pull 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest && docker stop mask-detector || true && docker rm mask-detector || true && docker run -d --name mask-detector -p 8081:8081 693149914819.dkr.ecr.ap-south-1.amazonaws.com/mask-detector:latest"
+        '''
     }
+}
 }
 }
