@@ -37,14 +37,23 @@ pipeline {
         }
     }
 
-    stage('Login to ECR') {
+   stage('Login to ECR') {
     steps {
-        bat """
-            "C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com
-        """
+        withCredentials([usernamePassword(
+            credentialsId: 'aws-credentials',
+            usernameVariable: 'AWS_ACCESS_KEY_ID',
+            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+        )]) {
+            bat '''
+                set AWS_ACCESS_KEY_ID=%AWS_ACCESS_KEY_ID%
+                set AWS_SECRET_ACCESS_KEY=%AWS_SECRET_ACCESS_KEY%
+                set AWS_DEFAULT_REGION=ap-south-1
+
+                "C:\\Program Files\\Amazon\\AWSCLIV2\\aws.exe" ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 693149914819.dkr.ecr.ap-south-1.amazonaws.com
+            '''
+        }
     }
 }
-
     stage('Push to ECR') {
         steps {
             bat '''
